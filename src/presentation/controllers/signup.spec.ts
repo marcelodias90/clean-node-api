@@ -20,15 +20,6 @@ const validacaoEmail = (): EmailValidator => {
   return new ValidarEmail();
 };
 
-const validacaoEmailComError = (): EmailValidator => {
-  class ValidarEmail implements EmailValidator {
-    valida(email: string): boolean {
-      throw new Error();
-    }
-  }
-  return new ValidarEmail();
-};
-
 const signUpController = (): SutTypes => {
   const validarEmail = validacaoEmail();
   const controller = new SignUpController(validarEmail);
@@ -131,8 +122,10 @@ describe("SignUp Controller", () => {
   });
 
   test("Retorna 500 se o ValidarEmail retorna uma exceção", () => {
-    const validarEmail = validacaoEmailComError();
-    const controller = new SignUpController(validarEmail);
+    const { validarEmail, controller } = signUpController();
+    jest.spyOn(validarEmail, "valida").mockImplementationOnce(() => {
+      throw new Error();
+    });
     const httpRequest = {
       body: {
         nome: "any_name",
