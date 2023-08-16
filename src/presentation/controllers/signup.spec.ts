@@ -1,62 +1,66 @@
-import { MissingParamError } from "../errors/missing-param-error";
+import { CampoObrigatorioError } from "../errors/missing-param-error";
 import { SignUpController } from "./signup";
 
+const signUpController = (): SignUpController => {
+  return new SignUpController();
+};
+
 describe("SignUp Controller", () => {
-  test("Should return 400 if no name is provided", () => {
-    const sut = new SignUpController();
+  test("Retorna 400 se o campo nome não for enviado.", () => {
+    const controller = signUpController();
     const httpRequest = {
       body: {
         email: "any_email@mail.com",
-        password: "any_password",
-        passwordConfirmation: "any_password",
+        senha: "any_password",
+        confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new MissingParamError("name"));
+    expect(httpResponse.body).toEqual(new CampoObrigatorioError("nome"));
   });
 
-  test("Should return 400 if no email is provided", () => {
-    const sut = new SignUpController();
+  test("Retorna 400 se o campo email não for enviado.", () => {
+    const controller = signUpController();
     const httpRequest = {
       body: {
-        name: "any_name",
-        password: "any_password",
-        passwordConfirmation: "any_password",
+        nome: "any_name",
+        senha: "any_password",
+        confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new MissingParamError("email"));
+    expect(httpResponse.body).toEqual(new CampoObrigatorioError("email"));
   });
 
-  test("Should return 400 if no password is provided", () => {
-    const sut = new SignUpController();
+  test("Retorna 400 se o campo senha não for enviado.", () => {
+    const controller = signUpController();
     const httpRequest = {
       body: {
-        name: "any_name",
+        nome: "any_name",
         email: "any_email@mail.com",
-        passwordConfirmation: "any_password",
+        confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new MissingParamError("password"));
+    expect(httpResponse.body).toEqual(new CampoObrigatorioError("senha"));
   });
 
-  test("Should return 400 if no password confirmation is provided", () => {
-    const sut = new SignUpController();
+  test("Retorna 400 se o campo confirmação de senha não for enviado.", () => {
+    const controller = signUpController();
     const httpRequest = {
       body: {
-        name: "any_name",
+        nome: "any_name",
         email: "any_email@mail.com",
-        password: "any_password",
+        senha: "any_password",
       },
     };
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(
-      new MissingParamError("passwordConfirmation")
+      new CampoObrigatorioError("confirmacaoSenha")
     );
   });
 });

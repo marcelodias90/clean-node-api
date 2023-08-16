@@ -1,6 +1,6 @@
-export class MissingParamError extends Error {
+export class CampoObrigatorioError extends Error {
   constructor(paramName: string) {
-    super(`Missing param: ${paramName}`);
-    this.name = "MissingParamError";
+    super(`Campo Obrigatório: ${paramName}`);
+    this.name = "CampoObrigatorioError";
   }
 }

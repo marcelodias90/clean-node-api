@@ -1,19 +1,14 @@
-import { MissingParamError } from "../errors/missing-param-error";
+import { CampoObrigatorioError } from "../errors/missing-param-error";
 import { badRequest } from "../helpers/http-helpers";
 import { Controller } from "../protocols/controller";
 import { HttpRequest, HttpResponse } from "../protocols/http";
 
 export class SignUpController implements Controller {
-  handle(httpRequest: HttpRequest): HttpResponse {
-    const requiredFields = [
-      "name",
-      "email",
-      "password",
-      "passwordConfirmation",
-    ];
-    for (const field of requiredFields) {
-      if (!httpRequest.body[field]) {
-        return badRequest(new MissingParamError(field));
+  execute(httpRequest: HttpRequest): HttpResponse {
+    const camposObrigatorio = ["nome", "email", "senha", "confirmacaoSenha"];
+    for (const campo of camposObrigatorio) {
+      if (!httpRequest.body[campo]) {
+        return badRequest(new CampoObrigatorioError(campo));
       }
     }
   }
