@@ -5,9 +5,9 @@ const config: Config = {
   transform: {
     ".+\\.ts$": "ts-jest",
   },
-  clearMocks: true,
+  //clearMocks: true,
 
-  collectCoverage: true,
+  // collectCoverage: true,
 
   collectCoverageFrom: ["<rootDir>/src/**/*.ts"],
 
