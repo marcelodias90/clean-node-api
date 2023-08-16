@@ -31,9 +31,9 @@ const criarUsuario = (): CriarUsuario => {
     criar(usuario: usuarioCustomizado): Usuario {
       const usuarioTeste = {
         id: "valid_id",
-        nome: "valid_nome",
-        email: "valid_email",
-        senha: "valid_senha",
+        nome: "valid_name",
+        email: "valid_email@mail.com",
+        senha: "valid_password",
       };
       return usuarioTeste;
     }
@@ -214,5 +214,25 @@ describe("SignUp Controller", () => {
     const httpResponse = controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test("Retorna 200 se o valor for válido.", () => {
+    const { controller, validarEmail } = signUpController();
+    const httpRequest = {
+      body: {
+        nome: "valid_name",
+        email: "valid_email@mail.com",
+        senha: "valida_password",
+        confirmacaoSenha: "valida_password",
+      },
+    };
+    const httpResponse = controller.execute(httpRequest);
+    expect(httpResponse.statusCode).toBe(200);
+    expect(httpResponse.body).toEqual({
+      id: "valid_id",
+      nome: "valid_name",
+      email: "valid_email@mail.com",
+      senha: "valid_password",
+    });
   });
 });

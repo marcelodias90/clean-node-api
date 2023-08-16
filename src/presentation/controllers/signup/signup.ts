@@ -33,11 +33,15 @@ export class SignUpController implements Controller {
       if (!valido) {
         return badRequest(new CampoInvalidoError("email"));
       }
-      this.criaUsuario.criar({
+      const usuario = this.criaUsuario.criar({
         nome,
         email,
         senha,
       });
+      return {
+        statusCode: 200,
+        body: usuario,
+      };
     } catch (error) {
       return serverError();
     }
