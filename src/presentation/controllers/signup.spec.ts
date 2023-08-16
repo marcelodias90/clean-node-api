@@ -11,13 +11,26 @@ interface SutTypes {
   validarEmail: EmailValidator;
 }
 
-const signUpController = (): SutTypes => {
+const validacaoEmail = (): EmailValidator => {
   class ValidarEmail implements EmailValidator {
     valida(email: string): boolean {
       return true;
     }
   }
-  const validarEmail = new ValidarEmail();
+  return new ValidarEmail();
+};
+
+const validacaoEmailComError = (): EmailValidator => {
+  class ValidarEmail implements EmailValidator {
+    valida(email: string): boolean {
+      throw new Error();
+    }
+  }
+  return new ValidarEmail();
+};
+
+const signUpController = (): SutTypes => {
+  const validarEmail = validacaoEmail();
   const controller = new SignUpController(validarEmail);
   return {
     controller,
@@ -118,12 +131,7 @@ describe("SignUp Controller", () => {
   });
 
   test("Retorna 500 se o ValidarEmail retorna uma exceção", () => {
-    class ValidarEmail implements EmailValidator {
-      valida(email: string): boolean {
-        throw new Error();
-      }
-    }
-    const validarEmail = new ValidarEmail();
+    const validarEmail = validacaoEmailComError();
     const controller = new SignUpController(validarEmail);
     const httpRequest = {
       body: {
