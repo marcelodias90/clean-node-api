@@ -1,13 +1,30 @@
-import { CampoObrigatorioError } from "../errors/missing-param-error";
+import { CampoObrigatorioError } from "../errors/CampoObrigatorioError";
+import { emailInvalidoError } from "../errors/emailInvalidoError";
+import { EmailValidator } from "../protocols/email-validator";
 import { SignUpController } from "./signup";
 
-const signUpController = (): SignUpController => {
-  return new SignUpController();
+interface SutTypes {
+  controller: SignUpController;
+  validarEmail: EmailValidator;
+}
+
+const signUpController = (): SutTypes => {
+  class ValidarEmail implements EmailValidator {
+    valida(email: string): boolean {
+      return true;
+    }
+  }
+  const validarEmail = new ValidarEmail();
+  const controller = new SignUpController(validarEmail);
+  return {
+    controller,
+    validarEmail,
+  };
 };
 
 describe("SignUp Controller", () => {
   test("Retorna 400 se o campo nome não for enviado.", () => {
-    const controller = signUpController();
+    const { controller } = signUpController();
     const httpRequest = {
       body: {
         email: "any_email@mail.com",
@@ -21,7 +38,7 @@ describe("SignUp Controller", () => {
   });
 
   test("Retorna 400 se o campo email não for enviado.", () => {
-    const controller = signUpController();
+    const { controller } = signUpController();
     const httpRequest = {
       body: {
         nome: "any_name",
@@ -35,7 +52,7 @@ describe("SignUp Controller", () => {
   });
 
   test("Retorna 400 se o campo senha não for enviado.", () => {
-    const controller = signUpController();
+    const { controller } = signUpController();
     const httpRequest = {
       body: {
         nome: "any_name",
@@ -49,7 +66,7 @@ describe("SignUp Controller", () => {
   });
 
   test("Retorna 400 se o campo confirmação de senha não for enviado.", () => {
-    const controller = signUpController();
+    const { controller } = signUpController();
     const httpRequest = {
       body: {
         nome: "any_name",
@@ -62,5 +79,21 @@ describe("SignUp Controller", () => {
     expect(httpResponse.body).toEqual(
       new CampoObrigatorioError("confirmacaoSenha")
     );
+  });
+
+  test("Retorna 400 se o email não for válido.", () => {
+    const { controller, validarEmail } = signUpController();
+    jest.spyOn(validarEmail, "valida").mockReturnValueOnce(false); //alterando o valor do retorno da funçao para executar o teste
+    const httpRequest = {
+      body: {
+        nome: "any_name",
+        email: "invalid_email@mail.com",
+        senha: "any_password",
+        confirmacaoSenha: "any_password",
+      },
+    };
+    const httpResponse = controller.execute(httpRequest);
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new emailInvalidoError("email"));
   });
 });
