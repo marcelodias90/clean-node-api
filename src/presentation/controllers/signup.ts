@@ -22,10 +22,11 @@ export class SignUpController implements Controller {
           return badRequest(new CampoObrigatorioError(campo));
         }
       }
-      const valido = this.validaEmail.valida(httpRequest.body.email);
-      if (httpRequest.body.senha !== httpRequest.body.confirmacaoSenha) {
+      const { email, senha, confirmacaoSenha } = httpRequest.body;
+      if (senha !== confirmacaoSenha) {
         return badRequest(new CampoInvalidoError("confirmacaoSenha"));
       }
+      const valido = this.validaEmail.valida(email);
       if (!valido) {
         return badRequest(new CampoInvalidoError("email"));
       }
