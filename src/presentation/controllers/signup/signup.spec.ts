@@ -1,14 +1,14 @@
-import { Usuario } from "../../domain/models/account";
-import {
-  CriarUsuario,
-  usuarioCustomizado,
-} from "../../domain/usecases/add-account";
 import {
   CampoObrigatorioError,
   CampoInvalidoError,
   ServerError,
-} from "../errors";
-import { EmailValidator } from "../protocols";
+} from "../../errors";
+import {
+  EmailValidator,
+  CriarUsuario,
+  usuarioCustomizado,
+  Usuario,
+} from "./signup-protocols";
 import { SignUpController } from "./signup";
 
 interface SutTypes {

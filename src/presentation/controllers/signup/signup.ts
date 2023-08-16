@@ -1,12 +1,12 @@
-import { CriarUsuario } from "../../domain/usecases/add-account";
-import { CampoObrigatorioError, CampoInvalidoError } from "../errors";
-import { badRequest, serverError } from "../helpers/http-helpers";
+import { CampoObrigatorioError, CampoInvalidoError } from "../../errors";
+import { badRequest, serverError } from "../../helpers/http-helpers";
 import {
   Controller,
   EmailValidator,
   HttpRequest,
   HttpResponse,
-} from "../protocols";
+  CriarUsuario,
+} from "./signup-protocols";
 
 export class SignUpController implements Controller {
   private readonly validaEmail: EmailValidator;
