@@ -1,5 +1,6 @@
 import { CampoObrigatorioError } from "../errors/CampoObrigatorioError";
 import { emailInvalidoError } from "../errors/emailInvalidoError";
+import { ServerError } from "../errors/server-error";
 import { EmailValidator } from "../protocols/email-validator";
 import { SignUpController } from "./signup";
 
@@ -112,5 +113,26 @@ describe("SignUp Controller", () => {
     };
     controller.execute(httpRequest);
     expect(validSpy).toHaveBeenCalledWith("any_email@mail.com");
+  });
+
+  test("Retorna 500 se o ValidarEmail retorna uma exceção", () => {
+    class ValidarEmail implements EmailValidator {
+      valida(email: string): boolean {
+        throw new Error();
+      }
+    }
+    const validarEmail = new ValidarEmail();
+    const controller = new SignUpController(validarEmail);
+    const httpRequest = {
+      body: {
+        nome: "any_name",
+        email: "any_email@mail.com",
+        senha: "any_password",
+        confirmacaoSenha: "any_password",
+      },
+    };
+    const httpResponse = controller.execute(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 });
