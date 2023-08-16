@@ -1,6 +1,6 @@
 import {
   CampoObrigatorioError,
-  emailInvalidoError,
+  CampoInvalidoError,
   ServerError,
 } from "../errors";
 import { EmailValidator } from "../protocols";
@@ -88,6 +88,23 @@ describe("SignUp Controller", () => {
     );
   });
 
+  test("Retorna 400 se a confirmação da senha for diferente", () => {
+    const { controller } = signUpController();
+    const httpRequest = {
+      body: {
+        nome: "any_name",
+        email: "any_email@mail.com",
+        senha: "any_password",
+        confirmacaoSenha: "invalid_password",
+      },
+    };
+    const httpResponse = controller.execute(httpRequest);
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(
+      new CampoInvalidoError("confirmacaoSenha")
+    );
+  });
+
   test("Retorna 400 se o email não for válido.", () => {
     const { controller, validarEmail } = signUpController();
     jest.spyOn(validarEmail, "valida").mockReturnValueOnce(false); //alterando o valor do retorno da funçao para executar o teste
@@ -101,7 +118,7 @@ describe("SignUp Controller", () => {
     };
     const httpResponse = controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new emailInvalidoError("email"));
+    expect(httpResponse.body).toEqual(new CampoInvalidoError("email"));
   });
 
   test("Deve enviar email correto.", () => {

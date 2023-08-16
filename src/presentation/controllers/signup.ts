@@ -1,4 +1,4 @@
-import { CampoObrigatorioError, emailInvalidoError } from "../errors";
+import { CampoObrigatorioError, CampoInvalidoError } from "../errors";
 import { badRequest, serverError } from "../helpers/http-helpers";
 import {
   Controller,
@@ -23,8 +23,11 @@ export class SignUpController implements Controller {
         }
       }
       const valido = this.validaEmail.valida(httpRequest.body.email);
+      if (httpRequest.body.senha !== httpRequest.body.confirmacaoSenha) {
+        return badRequest(new CampoInvalidoError("confirmacaoSenha"));
+      }
       if (!valido) {
-        return badRequest(new emailInvalidoError("email"));
+        return badRequest(new CampoInvalidoError("email"));
       }
     } catch (error) {
       return serverError();

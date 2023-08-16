@@ -1,3 +1,3 @@
 export * from "./CampoObrigatorioError";
 export * from "./server-error";
-export * from "./emailInvalidoError";
+export * from "./CampoInvalidoError";
