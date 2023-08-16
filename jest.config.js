@@ -1,6 +1,4 @@
-import type { Config } from "jest";
-
-const config: Config = {
+module.exports = {
   roots: ["<rootDir>/src"],
   transform: {
     ".+\\.ts$": "ts-jest",
@@ -194,5 +192,3 @@ const config: Config = {
   // Whether to use watchman for file crawling
   // watchman: true,
 };
-
-export default config;
