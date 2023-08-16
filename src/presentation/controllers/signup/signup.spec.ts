@@ -28,14 +28,14 @@ const validacaoEmail = (): EmailValidator => {
 
 const criarUsuario = (): CriarUsuario => {
   class criarUsuarioRepositorio implements CriarUsuario {
-    criar(usuario: usuarioCustomizado): Usuario {
+    async criar(usuario: usuarioCustomizado): Promise<Usuario> {
       const usuarioTeste = {
         id: "valid_id",
         nome: "valid_name",
         email: "valid_email@mail.com",
         senha: "valid_password",
       };
-      return usuarioTeste;
+      return new Promise((resolve) => resolve(usuarioTeste));
     }
   }
   return new criarUsuarioRepositorio();
@@ -53,7 +53,7 @@ const signUpController = (): SutTypes => {
 };
 
 describe("SignUp Controller", () => {
-  test("Retorna 400 se o campo nome não for enviado.", () => {
+  test("Retorna 400 se o campo nome não for enviado.", async () => {
     const { controller } = signUpController();
     const httpRequest = {
       body: {
@@ -62,12 +62,12 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new CampoObrigatorioError("nome"));
   });
 
-  test("Retorna 400 se o campo email não for enviado.", () => {
+  test("Retorna 400 se o campo email não for enviado.", async () => {
     const { controller } = signUpController();
     const httpRequest = {
       body: {
@@ -76,12 +76,12 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new CampoObrigatorioError("email"));
   });
 
-  test("Retorna 400 se o campo senha não for enviado.", () => {
+  test("Retorna 400 se o campo senha não for enviado.", async () => {
     const { controller } = signUpController();
     const httpRequest = {
       body: {
@@ -90,12 +90,12 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new CampoObrigatorioError("senha"));
   });
 
-  test("Retorna 400 se o campo confirmação de senha não for enviado.", () => {
+  test("Retorna 400 se o campo confirmação de senha não for enviado.", async () => {
     const { controller } = signUpController();
     const httpRequest = {
       body: {
@@ -104,14 +104,14 @@ describe("SignUp Controller", () => {
         senha: "any_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(
       new CampoObrigatorioError("confirmacaoSenha")
     );
   });
 
-  test("Retorna 400 se a confirmação da senha for diferente", () => {
+  test("Retorna 400 se a confirmação da senha for diferente", async () => {
     const { controller } = signUpController();
     const httpRequest = {
       body: {
@@ -121,14 +121,14 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "invalid_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(
       new CampoInvalidoError("confirmacaoSenha")
     );
   });
 
-  test("Retorna 400 se o email não for válido.", () => {
+  test("Retorna 400 se o email não for válido.", async () => {
     const { controller, validarEmail } = signUpController();
     jest.spyOn(validarEmail, "valida").mockReturnValueOnce(false); //alterando o valor do retorno da funçao para executar o teste
     const httpRequest = {
@@ -139,12 +139,12 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new CampoInvalidoError("email"));
   });
 
-  test("Deve enviar email correto.", () => {
+  test("Deve enviar email correto.", async () => {
     const { controller, validarEmail } = signUpController();
     const validSpy = jest
       .spyOn(validarEmail, "valida")
@@ -157,11 +157,11 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    controller.execute(httpRequest);
+    await controller.execute(httpRequest);
     expect(validSpy).toHaveBeenCalledWith("any_email@mail.com");
   });
 
-  test("Retorna 500 se o ValidarEmail retorna uma exceção", () => {
+  test("Retorna 500 se o ValidarEmail retorna uma exceção", async () => {
     const { validarEmail, controller } = signUpController();
     jest.spyOn(validarEmail, "valida").mockImplementationOnce(() => {
       throw new Error();
@@ -174,12 +174,12 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
   });
 
-  test("Deve enviar valores correto do usuario.", () => {
+  test("Deve enviar valores correto do usuario.", async () => {
     const { controller, criaUsuario } = signUpController();
     const criarSpy = jest.spyOn(criaUsuario, "criar");
     const httpRequest = {
@@ -190,7 +190,7 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    controller.execute(httpRequest);
+    await controller.execute(httpRequest);
     expect(criarSpy).toHaveBeenCalledWith({
       nome: "any_name",
       email: "any_email@mail.com",
@@ -198,10 +198,10 @@ describe("SignUp Controller", () => {
     });
   });
 
-  test("Retorna 500 se o criarUsuario retorna uma exceção", () => {
+  test("Retorna 500 se o criarUsuario retorna uma exceção", async () => {
     const { criaUsuario, controller } = signUpController();
-    jest.spyOn(criaUsuario, "criar").mockImplementationOnce(() => {
-      throw new Error();
+    jest.spyOn(criaUsuario, "criar").mockImplementationOnce(async () => {
+      return new Promise((resolve, reject) => reject(new Error()));
     });
     const httpRequest = {
       body: {
@@ -211,12 +211,12 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "any_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
   });
 
-  test("Retorna 200 se o valor for válido.", () => {
+  test("Retorna 200 se o valor for válido.", async () => {
     const { controller, validarEmail } = signUpController();
     const httpRequest = {
       body: {
@@ -226,7 +226,7 @@ describe("SignUp Controller", () => {
         confirmacaoSenha: "valida_password",
       },
     };
-    const httpResponse = controller.execute(httpRequest);
+    const httpResponse = await controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(200);
     expect(httpResponse.body).toEqual({
       id: "valid_id",

@@ -7,5 +7,5 @@ export interface usuarioCustomizado {
 }
 
 export interface CriarUsuario {
-  criar(usuario: usuarioCustomizado): Usuario;
+  criar(usuario: usuarioCustomizado): Promise<Usuario>;
 }

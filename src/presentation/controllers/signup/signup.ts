@@ -17,7 +17,7 @@ export class SignUpController implements Controller {
     this.criaUsuario = criaUsuario;
   }
 
-  execute(httpRequest: HttpRequest): HttpResponse {
+  async execute(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const camposObrigatorio = ["nome", "email", "senha", "confirmacaoSenha"];
       for (const campo of camposObrigatorio) {
@@ -33,7 +33,7 @@ export class SignUpController implements Controller {
       if (!valido) {
         return badRequest(new CampoInvalidoError("email"));
       }
-      const usuario = this.criaUsuario.criar({
+      const usuario = await this.criaUsuario.criar({
         nome,
         email,
         senha,
