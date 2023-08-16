@@ -1,5 +1,4 @@
-import { CampoObrigatorioError } from "../errors/CampoObrigatorioError";
-import { emailInvalidoError } from "../errors/emailInvalidoError";
+import { CampoObrigatorioError, emailInvalidoError } from "../errors";
 import { badRequest, serverError } from "../helpers/http-helpers";
 import { Controller } from "../protocols/controller";
 import { EmailValidator } from "../protocols/email-validator";
