@@ -179,7 +179,7 @@ describe("SignUp Controller", () => {
     expect(httpResponse.body).toEqual(new ServerError());
   });
 
-  test("Deve enviar email correto.", () => {
+  test("Deve enviar valores correto do usuario.", () => {
     const { controller, criaUsuario } = signUpController();
     const criarSpy = jest.spyOn(criaUsuario, "criar");
     const httpRequest = {
@@ -196,5 +196,23 @@ describe("SignUp Controller", () => {
       email: "any_email@mail.com",
       senha: "any_password",
     });
+  });
+
+  test("Retorna 500 se o criarUsuario retorna uma exceção", () => {
+    const { criaUsuario, controller } = signUpController();
+    jest.spyOn(criaUsuario, "criar").mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const httpRequest = {
+      body: {
+        nome: "any_name",
+        email: "any_email@mail.com",
+        senha: "any_password",
+        confirmacaoSenha: "any_password",
+      },
+    };
+    const httpResponse = controller.execute(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 });
