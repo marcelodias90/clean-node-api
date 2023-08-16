@@ -96,4 +96,21 @@ describe("SignUp Controller", () => {
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new emailInvalidoError("email"));
   });
+
+  test("Deve enviar email correto.", () => {
+    const { controller, validarEmail } = signUpController();
+    const validSpy = jest
+      .spyOn(validarEmail, "valida")
+      .mockReturnValueOnce(false);
+    const httpRequest = {
+      body: {
+        nome: "any_name",
+        email: "any_email@mail.com",
+        senha: "any_password",
+        confirmacaoSenha: "any_password",
+      },
+    };
+    controller.execute(httpRequest);
+    expect(validSpy).toHaveBeenCalledWith("any_email@mail.com");
+  });
 });
