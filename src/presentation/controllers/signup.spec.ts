@@ -1,3 +1,8 @@
+import { Usuario } from "../../domain/models/account";
+import {
+  CriarUsuario,
+  usuarioCustomizado,
+} from "../../domain/usecases/add-account";
 import {
   CampoObrigatorioError,
   CampoInvalidoError,
@@ -9,6 +14,7 @@ import { SignUpController } from "./signup";
 interface SutTypes {
   controller: SignUpController;
   validarEmail: EmailValidator;
+  criaUsuario: CriarUsuario;
 }
 
 const validacaoEmail = (): EmailValidator => {
@@ -20,12 +26,29 @@ const validacaoEmail = (): EmailValidator => {
   return new ValidarEmail();
 };
 
+const criarUsuario = (): CriarUsuario => {
+  class criarUsuarioRepositorio implements CriarUsuario {
+    criar(usuario: usuarioCustomizado): Usuario {
+      const usuarioTeste = {
+        id: "valid_id",
+        nome: "valid_nome",
+        email: "valid_email",
+        senha: "valid_senha",
+      };
+      return usuarioTeste;
+    }
+  }
+  return new criarUsuarioRepositorio();
+};
+
 const signUpController = (): SutTypes => {
   const validarEmail = validacaoEmail();
-  const controller = new SignUpController(validarEmail);
+  const criaUsuario = criarUsuario();
+  const controller = new SignUpController(validarEmail, criaUsuario);
   return {
     controller,
     validarEmail,
+    criaUsuario,
   };
 };
 
@@ -154,5 +177,24 @@ describe("SignUp Controller", () => {
     const httpResponse = controller.execute(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test("Deve enviar email correto.", () => {
+    const { controller, criaUsuario } = signUpController();
+    const criarSpy = jest.spyOn(criaUsuario, "criar");
+    const httpRequest = {
+      body: {
+        nome: "any_name",
+        email: "any_email@mail.com",
+        senha: "any_password",
+        confirmacaoSenha: "any_password",
+      },
+    };
+    controller.execute(httpRequest);
+    expect(criarSpy).toHaveBeenCalledWith({
+      nome: "any_name",
+      email: "any_email@mail.com",
+      senha: "any_password",
+    });
   });
 });

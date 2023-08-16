@@ -1,3 +1,4 @@
+import { CriarUsuario } from "../../domain/usecases/add-account";
 import { CampoObrigatorioError, CampoInvalidoError } from "../errors";
 import { badRequest, serverError } from "../helpers/http-helpers";
 import {
@@ -9,9 +10,11 @@ import {
 
 export class SignUpController implements Controller {
   private readonly validaEmail: EmailValidator;
+  private readonly criaUsuario: CriarUsuario;
 
-  constructor(validaEmail: EmailValidator) {
+  constructor(validaEmail: EmailValidator, criaUsuario: CriarUsuario) {
     this.validaEmail = validaEmail;
+    this.criaUsuario = criaUsuario;
   }
 
   execute(httpRequest: HttpRequest): HttpResponse {
@@ -22,7 +25,7 @@ export class SignUpController implements Controller {
           return badRequest(new CampoObrigatorioError(campo));
         }
       }
-      const { email, senha, confirmacaoSenha } = httpRequest.body;
+      const { nome, email, senha, confirmacaoSenha } = httpRequest.body;
       if (senha !== confirmacaoSenha) {
         return badRequest(new CampoInvalidoError("confirmacaoSenha"));
       }
@@ -30,6 +33,11 @@ export class SignUpController implements Controller {
       if (!valido) {
         return badRequest(new CampoInvalidoError("email"));
       }
+      this.criaUsuario.criar({
+        nome,
+        email,
+        senha,
+      });
     } catch (error) {
       return serverError();
     }
