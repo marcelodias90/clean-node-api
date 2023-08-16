@@ -1,5 +1,5 @@
 import { CampoObrigatorioError, CampoInvalidoError } from "../../errors";
-import { badRequest, serverError } from "../../helpers/http-helpers";
+import { badRequest, serverError, ok } from "../../helpers/http-helpers";
 import {
   Controller,
   EmailValidator,
@@ -38,10 +38,7 @@ export class SignUpController implements Controller {
         email,
         senha,
       });
-      return {
-        statusCode: 200,
-        body: usuario,
-      };
+      return ok(usuario);
     } catch (error) {
       return serverError();
     }
