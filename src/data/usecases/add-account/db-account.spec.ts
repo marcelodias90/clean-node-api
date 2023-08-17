@@ -6,13 +6,17 @@ interface SutTypes {
   addUsuarioDB: AdicionarUsuarioDB;
 }
 
-const controller = (): SutTypes => {
-  class CriptografarSenha {
+const criptografia = (): Criptografar => {
+  class CriptografarSenha implements Criptografar {
     async criptografar(valor: string): Promise<string> {
       return new Promise((resolve) => resolve("senha_criptografada"));
     }
   }
-  const criptografarSenha = new CriptografarSenha();
+  return new CriptografarSenha();
+};
+
+const controller = (): SutTypes => {
+  const criptografarSenha = criptografia();
   const addUsuarioDB = new AdicionarUsuarioDB(criptografarSenha);
   return {
     criptografarSenha,
