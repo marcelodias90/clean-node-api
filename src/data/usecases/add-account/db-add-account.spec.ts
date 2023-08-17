@@ -107,4 +107,21 @@ describe("DbAddAccount Usecase", () => {
     const promise = addUsuarioDB.criar(ususario);
     await expect(promise).rejects.toThrow();
   });
+
+  test("Deve retorna o usuário se tudo estiver correto", async () => {
+    const { addUsuarioDB } = controller();
+
+    const ususario = {
+      nome: "valid_nome",
+      email: "valid_email",
+      senha: "valid_senha",
+    };
+    const usuario = await addUsuarioDB.criar(ususario);
+    expect(usuario).toEqual({
+      id: "valid_id",
+      nome: "valid_nome",
+      email: "valid_email",
+      senha: "senha_criptografada",
+    });
+  });
 });
