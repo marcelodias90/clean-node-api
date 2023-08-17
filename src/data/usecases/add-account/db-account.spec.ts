@@ -1,5 +1,5 @@
-import { Criptografar } from "../../protocols/encrypter";
-import { AdicionarUsuarioDB } from "../db-add-account";
+import { Criptografar } from "./db-add-account-protocols";
+import { AdicionarUsuarioDB } from "./db-add-account";
 
 interface SutTypes {
   criptografarSenha: Criptografar;

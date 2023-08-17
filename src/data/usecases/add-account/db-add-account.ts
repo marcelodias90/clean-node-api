@@ -1,9 +1,9 @@
-import { Usuario } from "../../domain/models/account";
 import {
   CriarUsuario,
   usuarioCustomizado,
-} from "../../domain/usecases/add-account";
-import { Criptografar } from "../protocols/encrypter";
+  Usuario,
+  Criptografar,
+} from "./db-add-account-protocols";
 
 export class AdicionarUsuarioDB implements CriarUsuario {
   private readonly criptografar: Criptografar;
