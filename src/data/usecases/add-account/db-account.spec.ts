@@ -36,4 +36,20 @@ describe("DbAddAccount Usecase", () => {
     await addUsuarioDB.criar(ususario);
     expect(senhaCriptografada).toHaveBeenCalledWith("valid_senha");
   });
+
+  test("Deve lançar uma exceção se o metodo lançar uma exceção", async () => {
+    const { criptografarSenha, addUsuarioDB } = controller();
+    jest
+      .spyOn(criptografarSenha, "criptografar")
+      .mockReturnValueOnce(
+        new Promise((resolve, reject) => reject(new Error()))
+      );
+    const ususario = {
+      nome: "valid_nome",
+      email: "valid_email",
+      senha: "valid_senha",
+    };
+    const promise = addUsuarioDB.criar(ususario);
+    await expect(promise).rejects.toThrow();
+  });
 });
