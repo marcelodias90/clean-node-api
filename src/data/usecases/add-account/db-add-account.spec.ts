@@ -1,10 +1,31 @@
-import { Criptografar } from "./db-add-account-protocols";
+import {
+  Criptografar,
+  usuarioCustomizado,
+  Usuario,
+  UsuarioRepository,
+} from "./db-add-account-protocols";
 import { AdicionarUsuarioDB } from "./db-add-account";
 
 interface SutTypes {
   criptografarSenha: Criptografar;
   addUsuarioDB: AdicionarUsuarioDB;
+  usuarioRepo: UsuarioRepository;
 }
+
+const usuarioRepository = (): UsuarioRepository => {
+  class usuarioRepo implements UsuarioRepository {
+    async criar(usuario: usuarioCustomizado): Promise<Usuario> {
+      const falsoUsuario = {
+        id: "valid_id",
+        nome: "valid_nome",
+        email: "valid_email",
+        senha: "senha_criptografada",
+      };
+      return new Promise((resolve) => resolve(falsoUsuario));
+    }
+  }
+  return new usuarioRepo();
+};
 
 const criptografia = (): Criptografar => {
   class CriptografarSenha implements Criptografar {
@@ -17,10 +38,12 @@ const criptografia = (): Criptografar => {
 
 const controller = (): SutTypes => {
   const criptografarSenha = criptografia();
-  const addUsuarioDB = new AdicionarUsuarioDB(criptografarSenha);
+  const usuarioRepo = usuarioRepository();
+  const addUsuarioDB = new AdicionarUsuarioDB(criptografarSenha, usuarioRepo);
   return {
     criptografarSenha,
     addUsuarioDB,
+    usuarioRepo,
   };
 };
 
@@ -51,5 +74,21 @@ describe("DbAddAccount Usecase", () => {
     };
     const promise = addUsuarioDB.criar(ususario);
     await expect(promise).rejects.toThrow();
+  });
+
+  test("Deve ser enviado a AddAccountRepository os dados corretos", async () => {
+    const { usuarioRepo, addUsuarioDB } = controller();
+    const addSpy = jest.spyOn(usuarioRepo, "criar");
+    const ususario = {
+      nome: "valid_nome",
+      email: "valid_email",
+      senha: "valid_senha",
+    };
+    await addUsuarioDB.criar(ususario);
+    expect(addSpy).toHaveBeenCalledWith({
+      nome: "valid_nome",
+      email: "valid_email",
+      senha: "senha_criptografada",
+    });
   });
 });
