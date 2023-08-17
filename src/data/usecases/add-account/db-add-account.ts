@@ -22,9 +22,9 @@ export class AdicionarUsuarioDB implements CriarUsuario {
     const senhaCriptografada = await this.criptografar.criptografar(
       usuario.senha
     );
-    await this.usuarioRepository.criar(
+    const novoUsuario = await this.usuarioRepository.criar(
       Object.assign({}, usuario, { senha: senhaCriptografada })
     );
-    return new Promise((resolve) => resolve(null));
+    return novoUsuario;
   }
 }
