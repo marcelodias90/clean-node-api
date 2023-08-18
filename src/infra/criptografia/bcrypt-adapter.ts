@@ -8,7 +8,7 @@ export class BcryptAdapter implements Criptografar {
     this.salt = salt;
   }
   async criptografar(valor: string): Promise<string> {
-    await bcrypt.hash(valor, this.salt);
-    return null;
+    const hash = await bcrypt.hash(valor, this.salt);
+    return hash;
   }
 }
