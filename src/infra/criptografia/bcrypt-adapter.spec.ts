@@ -25,4 +25,13 @@ describe("Bcrypt Adapter", () => {
     const hash = await controller.criptografar("any_value");
     expect(hash).toBe("hash");
   });
+
+  test("Deve retorna exceção se o criptografar retonar exceção", async () => {
+    const controller = makeSut();
+    jest.spyOn(bcrypt, "hash").mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const promise = controller.criptografar("any_value");
+    await expect(promise).rejects.toThrow();
+  });
 });
