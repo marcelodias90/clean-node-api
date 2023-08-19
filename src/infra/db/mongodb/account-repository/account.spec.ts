@@ -9,8 +9,12 @@ describe("Account Mongo Repository", () => {
     await MongoHelper.disconnect();
   });
 
+  const mongoRepository = (): AccountMongoRepository => {
+    return new AccountMongoRepository();
+  };
+
   test("Deve retorna um usuario com sucesso", async () => {
-    const repository = new AccountMongoRepository();
+    const repository = mongoRepository();
     const usuario = await repository.criar({
       nome: "any_nome",
       email: "any_email@mail.com",
