@@ -9,6 +9,11 @@ describe("Account Mongo Repository", () => {
     await MongoHelper.disconnect();
   });
 
+  beforeEach(async () => {
+    const colecaoUsuario = MongoHelper.getCollection("usuarios");
+    await colecaoUsuario.deleteMany({});
+  });
+
   const mongoRepository = (): AccountMongoRepository => {
     return new AccountMongoRepository();
   };
