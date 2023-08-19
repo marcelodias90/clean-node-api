@@ -6,8 +6,7 @@ import { MongoHelper } from "../helpers/mongo-helpers";
 export class AccountMongoRepository implements UsuarioRepository {
   async criar(usuario: usuarioCustomizado): Promise<Usuario> {
     const colecaoUsuario = MongoHelper.getCollection("usuarios");
-    const resultado = await colecaoUsuario.insertOne(usuario);
-    const novoUsuario = { id: resultado.insertedId.toString(), ...usuario };
-    return novoUsuario;
+    await colecaoUsuario.insertOne(usuario);
+    return MongoHelper.map(usuario);
   }
 }
