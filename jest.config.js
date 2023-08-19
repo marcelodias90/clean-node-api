@@ -17,6 +17,7 @@ module.exports = {
 
   coverageDirectory: "coverage",
   testEnvironment: "node",
+  preset: "@shelf/jest-mongodb",
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
